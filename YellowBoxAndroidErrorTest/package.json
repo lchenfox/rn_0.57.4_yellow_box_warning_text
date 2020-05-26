@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "./edit_modules.sh"
   },
   "dependencies": {
     "react": "16.6.0-alpha.8af6728",
-    "react-native": "0.57.4"
+    "react-native": "0.57.4",
+    "react-native-modals": "^0.19.9",
+    "react-native-root-toast": "^3.2.1"
   },
   "devDependencies": {
     "babel-jest": "26.0.1",

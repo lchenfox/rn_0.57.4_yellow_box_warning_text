@@ -81,7 +81,7 @@ class BaseModal extends Component<ModalProps, State> {
     onTouchOutside: () => {},
     onHardwareBackPress: () => false,
     hasOverlay: true,
-    overlayOpacity: 0.5,
+    overlayOpacity: 0.3,
     overlayPointerEvents: null,
     overlayBackgroundColor: '#000',
     onShow: () => {},

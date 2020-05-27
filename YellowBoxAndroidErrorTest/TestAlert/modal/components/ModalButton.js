@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: isAndroid ? '400' : '500',
     fontFamily: isAndroid ? 'sans-serif-medium' : 'System',
-    fontSize: isAndroid ? 19 : 16,
-    color: '#044DE0',
+    fontSize: 18,
+    color: '#0070e8',
   },
   disable: {
     color: '#C5C6C5',

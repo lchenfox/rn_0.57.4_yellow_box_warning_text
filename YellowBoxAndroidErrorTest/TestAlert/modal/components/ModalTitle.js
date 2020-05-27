@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: isAndroid ? '400' : '500',
     fontFamily: isAndroid ? 'sans-serif-medium' : 'System',
-    fontSize: isAndroid ? 19 : 15,
+    fontSize: 18,
     color: '#151822',
   },
 });
@@ -44,6 +44,6 @@ const ModalTitle = ({
       </Text>
     </View>
   );
-}
+};
 
 export default ModalTitle;

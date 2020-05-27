@@ -6,9 +6,13 @@ import Modal, {
     ModalFooter,
     ModalButton,
     BottomModal,
+    ModalButtonProps,
     SlideAnimation,
     ScaleAnimation,
 } from './TestAlert';
+import WKToast from "./WKToast";
+import {Toast, Portal} from './components';
+import {WKAlert} from "./TestAlert";
 
 const styles = StyleSheet.create({
     container: {
@@ -62,11 +66,38 @@ export default class App extends Component {
                 <View style={styles.container}>
 
                     <Button
-                        title="Show Modal - Scale Animation"
+                        title="Bottom Modal with Title 嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻"
                         onPress={() => {
-                            this.setState({
-                                scaleAnimationModal: true,
-                            });
+
+                        }}
+                    />
+
+                    <Button
+                        title="Bottom Modal without Title 嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻"
+                        onPress={() => {
+
+                        }}
+                    />
+
+
+                    <Button
+                        title="Bottom Modal with Title 1"
+                        onPress={() => {
+                            this.alertRef.show();
+                        }}
+                    />
+
+                    <Button
+                        title="Bottom Modal without Title 2"
+                        onPress={() => {
+                            this.alertRef1.show();
+                        }}
+                    />
+
+                    <Button
+                        title="Show Modal - Scale Animation 3"
+                        onPress={() => {
+                            this.alertRef2.show();
                         }}
                     />
 
@@ -91,68 +122,46 @@ export default class App extends Component {
                 </View>
 
 
-                <Modal
-                    onTouchOutside={() => {
-                        this.setState({scaleAnimationModal: false});
-                    }}
-                    width={0.8}
-                    visible={this.state.scaleAnimationModal}
-                    onSwipeOut={() => {
-                        console.warn('on swipe out');
-                        this.setState({scaleAnimationModal: false})
-                    }}
-                    modalAnimation={new ScaleAnimation()}
-                    onHardwareBackPress={() => {
-                        console.warn('onHardwareBackPress');
-                        this.setState({scaleAnimationModal: false});
-                        return true;
-                    }}
-                    // onMove={() => console.warn('on move')}
-                    overlayPointerEvents={'none'}
-                    modalTitle={
-                        <ModalTitle
-                            textStyle={{color: 'red', fontSize: 18}}
-                            title="Modal - Scale Animation"
-                            hasTitleBar={false}
-                        />
-                    }
-                    actions={[
-                        <ModalButton
-                            text="DISMISS"
-                            onPress={() => {
-                                this.setState({scaleAnimationModal: false});
-                            }}
-                            key="button-1"
-                        />,
-                    ]}
-                    footer={
-                        <ModalFooter>
-                            <ModalButton
-                                text="CANCEL"
-                                bordered
-                                textStyle={{color: 'gray'}}
-                                onPress={() => {
-                                    this.setState({scaleAnimationModal: false});
-                                }}
-                                key="button-1"
-                            />
-                            <ModalButton
-                                text="OK"
-                                bordered
-                                onPress={() => {
-                                    this.setState({scaleAnimationModal: false});
-                                }}
-                                key="button-2"
-                            />
-                        </ModalFooter>
-                    }
-                >
-                    <ModalContent>
-                        <Text style={{textAlign: 'center', color: 'gray'}}>您确定要退出登录吗? 退出登录后，需要重新登录</Text>
-                    </ModalContent>
-                </Modal>
+                <WKAlert
+                    ref={ref => this.alertRef = ref}
+                    title={'Tips'}
+                    message={'Are you sure you want to logout?'}
+                    defaultTitle={'Cancel'}
+                    okTitle={'Confirm'}
+                    defaultCallback={() => {}}
+                    okCallback={() => {}}
+                />
 
-                <Modal.BottomModal
+
+                <WKAlert
+                    ref={ref => this.alertRef1 = ref}
+                    // title={'温馨提示'}
+                    // titleTextStyle={{color: 'red'}}
+                    message={'你确定要退出登录吗？'}
+                    // messageTextStyle={{color: 'green'}}
+                    // defaultTitle={'取消'}
+                    // defaultTextStyle={{color: 'red'}}
+                    // okTitle={'确定'}
+                    // okTextStyle={{color: 'cyan'}}
+                    defaultCallback={() => console.warn('good')}
+                    okCallback={() => console.warn('bad')}
+                />
+
+                <WKAlert
+                    ref={ref => this.alertRef2 = ref}
+                    // title={'温馨提示'}
+                    // titleTextStyle={{color: 'red'}}
+                    message={'你确定要退出登录吗？'}
+                    // messageTextStyle={{color: 'green'}}
+                    defaultTitle={'取消'}
+                    // defaultTextStyle={{color: 'red'}}
+                    okTitle={'确定'}
+                    okTextStyle={{color: WKAlert.DEFAULT_ALERT_COLORS.RED}}
+                    defaultCallback={() => console.warn('good')}
+                    okCallback={() => console.warn('bad')}
+                />
+
+                <BottomModal
                     visible={this.state.bottomModalAndTitle}
                     onTouchOutside={() => {
                         console.warn(111);
@@ -164,6 +173,8 @@ export default class App extends Component {
                         console.warn(222);
                         this.setState({bottomModalAndTitle: false});
                     }}
+                    swipeDirection={'right'}
+                    modalAnimation={new SlideAnimation({ slideFrom: 'right' })}
                     modalTitle={
                         <ModalTitle
                             style={{backgroundColor: 'white'}}
@@ -182,9 +193,9 @@ export default class App extends Component {
                             Bottom Modal with Title
                         </Text>
                     </ModalContent>
-                </Modal.BottomModal>
+                </BottomModal>
 
-                <Modal.BottomModal
+                <BottomModal
                     visible={this.state.bottomModal}
                     onTouchOutside={() => {
                         console.warn(333);
@@ -233,7 +244,7 @@ export default class App extends Component {
                             Bottom Modal without Title
                         </Text>
                     </ModalContent>
-                </Modal.BottomModal>
+                </BottomModal>
             </View>
         );
     }

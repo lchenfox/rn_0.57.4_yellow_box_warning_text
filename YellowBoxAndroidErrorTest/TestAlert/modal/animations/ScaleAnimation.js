@@ -8,8 +8,8 @@ export default class ScaleAnimation extends Animation {
     Animated.spring(this.animate, {
       toValue: 1,
       velocity: 0,
-      tension: 65,
-      friction: 7,
+      tension: 80,
+      friction: 8,
       useNativeDriver: this.useNativeDriver,
     }).start(onFinished);
   }
@@ -17,7 +17,7 @@ export default class ScaleAnimation extends Animation {
   out(onFinished?: Function = () => {}): void {
     Animated.timing(this.animate, {
       toValue: 0,
-      duration: 200,
+      duration: 150,
       useNativeDriver: this.useNativeDriver,
     }).start(onFinished);
   }

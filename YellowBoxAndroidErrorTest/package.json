@@ -8,12 +8,14 @@
     "postinstall": "./edit_modules.sh"
   },
   "dependencies": {
+    "@shufengdong/wanke-bases": "^1.0.0",
+    "babel-runtime": "latest",
+    "deepmerge": "latest",
+    "moment": "^2.26.0",
     "react": "16.6.0-alpha.8af6728",
     "react-native": "0.57.4",
     "react-native-modals": "^0.19.9",
-    "react-native-root-toast": "^3.2.1",
-    "babel-runtime": "latest",
-    "deepmerge": "latest"
+    "react-native-root-toast": "^3.2.1"
   },
   "devDependencies": {
     "babel-jest": "26.0.1",

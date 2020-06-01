@@ -16,41 +16,6 @@ import moment from "moment";
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    dialogContentView: {
-        paddingLeft: 18,
-        paddingRight: 18,
-    },
-    navigationBar: {
-        borderBottomColor: '#b5b5b5',
-        borderBottomWidth: 0.5,
-        backgroundColor: '#ffffff',
-    },
-    navigationTitle: {
-        padding: 10,
-    },
-    navigationButton: {
-        padding: 10,
-    },
-    navigationLeftButton: {
-        paddingLeft: 20,
-        paddingRight: 40,
-    },
-    navigator: {
-        flex: 1,
-        // backgroundColor: '#000000',
-    },
-    customBackgroundModal: {
-        opacity: 0.5,
-        backgroundColor: '#000',
-    },
-});
-
 /**
  * Gets the week day index for a date.
  * @param date A date string such as '2020-05-20' or '2020/05/20' or '2020-5-20'.
@@ -74,7 +39,7 @@ function getDaysInMonth(year: number, month: number): number {
     return new Date(year, month, 0).getDate();
 }
 
-const a = '1980-5-02';
+const a = '2010-5-02';
 const b = '2020-5-28';
 
 export default class App extends Component {
@@ -165,32 +130,32 @@ export default class App extends Component {
      so use the following function to compare two dates
      if date > another return true, else false
      */
-    _compare = (date, another) => {
+    _isMoreThan = (date, another) => {
+        if (!date || typeof date !== 'string' || !another || typeof date !== 'string') return false;
         const dateArr = date.split('-');
         const anotherArr = another.split('-');
+
+        // year1 > year2
         if (parseInt(dateArr[0]) > parseInt(anotherArr[0])) return true;
+
+        // year1 = year2
         if (parseInt(dateArr[0]) === parseInt(anotherArr[0])) {
+            // month1 > month2
             if (parseInt(dateArr[1]) > parseInt(anotherArr[1])) return true;
+            // month1 = month2
             if (parseInt(dateArr[1]) === parseInt(anotherArr[1])) {
+                // day1 > day2
                 return parseInt(dateArr[2]) > parseInt(anotherArr[2]);
             }
         }
+
+        // year1 < year2
         return false;
     };
 
     _hasSelectedTextBackgroundColor = (selectedDate1, selectedDate2, currentDate) => {
-        /**
-         * 文本边框有圆角、选中虚线
-         */
-
-        const selDate1 = this._compare(selectedDate1, selectedDate2) ? selectedDate2 : selectedDate1;
-        const selDate2 = this._compare(selectedDate1, selectedDate2) ? selectedDate1 : selectedDate2;
-        return !!(selDate1
-            && selDate2
-            // && _d.indexOf('--') < 0 // Filter invalid value like '2020-05--1'
-            && this._compare(currentDate, selDate1)
-            && this._compare(selDate2, currentDate));
-
+        if (!selectedDate1 || !selectedDate2) return false;
+        return !!(this._isMoreThan(currentDate, selectedDate1) && this._isMoreThan(selectedDate2, currentDate));
     };
 
     render() {
@@ -223,130 +188,158 @@ export default class App extends Component {
         // console.warn(text_width)
         return (
             <View style={{flex: 1}}>
-                <View style={styles.container}>
 
-                    <BottomModal
-                        visible={this.state.bottomModal}
-                        onTouchOutside={() => {
-                            // console.warn(333);
-                            this.setState({bottomModal: false});
+                <BottomModal
+                    visible={this.state.bottomModal}
+                    onTouchOutside={() => {
+                        // console.warn(333);
+                        this.setState({bottomModal: false});
+                    }}
+                    onSwipeOut={() => {
+                        // console.warn(444);
+                        this.setState({bottomModal: false});
+                    }}
+                    // modalStyle={{  }}
+                >
+                    <ModalContent
+                        style={{
+                            backgroundColor: 'fff',
+                            paddingHorizontal: 0,
+                            // height: '100%',
                         }}
-                        onSwipeOut={() => {
-                            // console.warn(444);
-                            this.setState({bottomModal: false});
-                        }}
-                        // modalStyle={{  }}
                     >
-                        <ModalContent
-                            style={{
-                                backgroundColor: 'fff',
-                                paddingHorizontal: 0,
-                                // height: '100%',
-                            }}
-                        >
-                            <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                                {weeks.map((week, index) => <Text key={index} style={{
-                                    fontSize: 16,
-                                    color: '#3e3e3e'
-                                }}>{week}</Text>)}
-                            </View>
-                            {
-                                <FlatList
-                                    // maxToRenderPerBatch={}
-                                    // initialNumToRender={}
-                                    // windowSize={}
-                                    // getItemCount={}
-                                    getItemLayout={(data, index) => ({
-                                        length: SCREEN_WIDTH,
-                                        offset: SCREEN_WIDTH * index,
-                                        index
-                                    })}
-                                    ref={ref => this.flatList = ref}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    data={this.state.dates1}
-                                    // getItem={}
-                                    // updateCellsBatchingPeriod={}
-                                    // disableVirtualization={}
-                                    horizontal={true}
-                                    pagingEnabled={true}
-                                    scrollEnabled={false}
-                                    // initialScrollIndex={this.state.dates1.length - 1}
-                                    renderItem={({item, index}) => {
-                                        return <View style={{width: Dimensions.get('window').width}}>
-                                            <View style={{flexDirection: 'row'}}>
-                                                <TouchableOpacity onPress={() => {
-                                                    if (index === 0) return;
-                                                    this.flatList.scrollToIndex({index: index - 1});
-                                                }}>
-                                                    <Text
-                                                        style={{height: 50}}>({item.year + '-' + item.month})Left</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={() => {
-                                                    if (index === this.state.dates1.length - 1) return;
-                                                    this.flatList.scrollToIndex({index: index + 1});
-                                                }}>
-                                                    <Text
-                                                        style={{height: 50}}>({item.year + '-' + item.month})Right</Text>
-                                                </TouchableOpacity>
-                                            </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                            {weeks.map((week, index) => <Text key={index} style={{
+                                fontSize: 16,
+                                color: '#3e3e3e'
+                            }}>{week}</Text>)}
+                        </View>
+                        {
+                            <FlatList
+                                // getItemCount={}
+                                windowSize={21}
+                                // getItemLayout={(data, index) => ({
+                                //     length: SCREEN_WIDTH,
+                                //     offset: SCREEN_WIDTH * index,
+                                //     index
+                                // })}
+                                getItemLayout={(data, index) => ({
+                                    length: 250,
+                                    offset: 250 * index,
+                                    index
+                                })}
+                                ref={ref => this.flatList = ref}
+                                keyExtractor={item => `${item.year}-${item.month}`}
+                                data={this.state.dates1}
+                                // getItem={}
+                                maxToRenderPerBatch={10}
+                                updateCellsBatchingPeriod={35}
+                                disableVirtualization={false}
+                                horizontal={false}
+                                pagingEnabled={false}
+                                scrollEnabled={true}
+                                removeClippedSubviews={false}
+                                extraData={this.state}
+                                initialNumToRender={5}
+                                // legacyImplementation={true}
+                                // inverted={true}
+                                // initialScrollIndex={this.state.dates1.length - 1}
+                                renderItem={({item, index}) => {
 
-                                            <View style={{flexDirection: 'row', flexWrap: 1}}>
-                                                {item.days.map((day, index) => {
-                                                    const _d = `${item.year}-${item.month}-${day}`;
-                                                    const {selectedDate1, selectedDate2} = this.state;
-                                                    let textBgColor = 'transparent';
-                                                    // if (selectedDate1 === _d || selectedDate2 === _d) {
-                                                    //     textBgColor = 'red';
-                                                    // }
+                                    return <View style={{width: Dimensions.get('window').width, height: 250}}>
+                                        <View style={{flexDirection: 'row'}}>
+                                            <TouchableOpacity onPress={() => {
+                                                console.warn('left: scroll to index');
+                                                if (index === 0) return;
+                                                this.flatList.scrollToIndex({index: index - 1});
+                                            }}>
+                                                <Text
+                                                    style={{height: 50}}>({item.year + '-' + item.month})Left</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => {
+                                                console.warn(index)
+                                                if (index === this.state.dates1.length - 1) return;
+                                                this.flatList.scrollToIndex({index: index + 1});
+                                            }}>
+                                                <Text
+                                                    style={{height: 50}}>({item.year + '-' + item.month})Right</Text>
+                                            </TouchableOpacity>
+                                        </View>
 
-                                                    if (this._hasSelectedTextBackgroundColor(selectedDate1, selectedDate2, _d)) {
-                                                        textBgColor = 'green';
-                                                    }
+                                        <View style={{flexDirection: 'row', flexWrap: 1}}>
+                                            {item.days.map((day, index) => {
+                                                const _d = `${item.year}-${item.month}-${day}`;
+                                                const {selectedDate1, selectedDate2} = this.state;
+                                                let textBgColor = 'transparent';
 
-                                                    return day < 0 ? <View key={index} style={{width: text_width}}/> :
-                                                        <TouchableOpacity
-                                                            key={index}
-                                                            onPress={() => {
+                                                if (selectedDate1 === _d || selectedDate2 === _d) {
+                                                    textBgColor = 'orange';
+                                                }
+
+                                                if (this._hasSelectedTextBackgroundColor(selectedDate1, selectedDate2, _d)) {
+                                                    textBgColor = 'yellow';
+                                                }
+
+                                                return day < 0 ? <View key={index} style={{width: text_width}}/> :
+                                                    <TouchableOpacity
+                                                        key={index}
+                                                        onPress={() => {
+                                                            if (selectedDate1 && selectedDate2) {
+                                                                this.setState({
+                                                                    selectedDate1: _d,
+                                                                    selectedDate2: null,
+                                                                });
+                                                            } else {
                                                                 if (selectedDate1) {
-                                                                    // console.warn(123)
-                                                                    this.setState({selectedDate2: `${item.year}-${item.month}-${day}`});
+                                                                    const isBigger = this._isMoreThan(selectedDate1, _d);
+                                                                    this.setState({
+                                                                        selectedDate1: isBigger ? _d : selectedDate1,
+                                                                        selectedDate2: isBigger ? selectedDate1 : _d,
+                                                                    });
                                                                 } else {
-                                                                    // console.warn(456)
-                                                                    this.setState({selectedDate1: `${item.year}-${item.month}-${day}`});
+                                                                    this.setState({selectedDate1: _d});
                                                                 }
-                                                                // console.warn('select date: ' + _d);
-                                                            }}
-                                                            style={{
-                                                                width: text_width,
-                                                                // backgroundColor: index % 2 ? 'blue' : 'orange',
-                                                                justifyContent: 'center',
-                                                                alignItems: 'center'
-                                                            }}
-                                                        >
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: text_width,
+                                                            // backgroundColor: index % 2 ? 'blue' : 'orange',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }}
+                                                    >
+                                                        <View style={{
+                                                            // borderTopWidth: 1,
+                                                            // borderTopColor: textBgColor,
+                                                            // borderTopStyle: 'dotted',
+                                                            // borderBottomColor: textBgColor,
+                                                            // borderBottomStyle: 'dotted',
+                                                            // borderBottomWidth: 1,
+                                                            backgroundColor: textBgColor === 'orange' ? 'yellow' : textBgColor,
+                                                            borderTopRightRadius: selectedDate1 && selectedDate2 ? (selectedDate1 === _d ? 0 : ((selectedDate2 === _d) ? 10 : 0)) : 10,
+                                                            borderBottomRightRadius: selectedDate1 && selectedDate2 ? (selectedDate1 === _d ? 0 : ((selectedDate2 === _d) ? 10 : 0)) : 10,
+                                                            borderTopLeftRadius: selectedDate1 && selectedDate2 ? (selectedDate2 === _d ? 0 : ((selectedDate1 === _d) ? 10 : 0)) : 10,
+                                                            borderBottomLeftRadius: selectedDate1 && selectedDate2 ? (selectedDate2 === _d ? 0 : ((selectedDate1 === _d) ? 10 : 0)) : 10,
+                                                            width: (index + 1) % 7 === 0 ? text_width - 5 : (index % 7 === 0 ? text_width - 5 : text_width),
+                                                            marginRight: (index + 1) % 7 === 0 ? 5 : 0,
+                                                            marginLeft: index % 7 === 0 ? 5 : 0,
+
+                                                            // borderWidth: 1,
+                                                            // borderColor: textBgColor,
+                                                            // borderStyle: 'dotted',
+                                                            // borderLeftWidth: index % 7 === 0 ? 1 : 0,
+                                                            // borderLeftColor: textBgColor,
+                                                            // borderLeftStyle: 'dotted',
+                                                            // borderRightWidth: (index + 1) % 7 === 0 ? 1 : 0,
+                                                            // borderRightColor: textBgColor,
+                                                            // borderRightStyle: 'dotted',
+                                                            // justifyContent: 'center',
+                                                            marginVertical: 4,
+                                                            // backgroundColor: index % 2 ? 'red' : 'green',
+                                                        }}>
                                                             <View style={{
-                                                                borderTopWidth: 1,
-                                                                borderTopColor: textBgColor,
-                                                                borderTopStyle: 'dotted',
-                                                                borderBottomColor: textBgColor,
-                                                                borderBottomStyle: 'dotted',
-                                                                borderBottomWidth: 1,
-                                                                backgroundColor: selectedDate1 === _d || selectedDate2 === _d ? 'red' : null,
-                                                                width: (index + 1) % 7 === 0 ? text_width - 5 : (index % 7 === 0 ? text_width - 5 : text_width),
-                                                                marginRight: (index + 1) % 7 === 0 ? 5 : 0,
-                                                                marginLeft: index % 7 === 0 ? 5 : 0,
-                                                                // borderWidth: 1,
-                                                                // borderColor: textBgColor,
-                                                                // borderStyle: 'dotted',
-                                                                borderLeftWidth: index % 7 === 0 ? 1 : 0,
-                                                                borderLeftColor: textBgColor,
-                                                                borderLeftStyle: 'dotted',
-                                                                borderRightWidth: (index + 1) % 7 === 0 ? 1 : 0,
-                                                                borderRightColor: textBgColor,
-                                                                borderRightStyle: 'dotted',
-                                                                // borderRadius: 1,
-                                                                // justifyContent: 'center',
-                                                                marginVertical: 4,
-                                                                // backgroundColor: index % 2 ? 'red' : 'green',
+                                                                borderRadius: textBgColor === 'orange' ? 10 : 0,
+                                                                backgroundColor: textBgColor === 'orange' ? 'orange' : 'transparent'
                                                             }}>
                                                                 <Text style={{
 
@@ -354,155 +347,30 @@ export default class App extends Component {
                                                                     // backgroundColor: textBgColor,
                                                                     textAlign: 'center',
                                                                     paddingVertical: 3,
-                                                                    color: '#3e3e3e'
+                                                                    color: '#3e3e3e',
+                                                                    // backgroundColor: textBgColor === 'red' ? 'orange' : 'transparent',
                                                                 }}>{day}</Text>
                                                             </View>
-                                                        </TouchableOpacity>
-                                                })}
-                                            </View>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                            })}
                                         </View>
-                                    }}
-                                />
-                            }
-                        </ModalContent>
-                    </BottomModal>
+                                    </View>
+                                }}
+                            />
+                        }
+                    </ModalContent>
+                </BottomModal>
 
+                <View style={{backgroundColor: 'yellow', marginTop: 200}}>
                     <Button
                         title="系统Modal测试日期"
                         onPress={() => {
-                            this.setState({visible: true})
-                        }}
-                    />
-
-                    <Button
-                        title="Bottom Modal without Title 嘻嘻嘻嘻嘻嘻嘻嘻寻寻寻1"
-                        onPress={() => {
-                            const startDate = new Date();
-                            console.warn('begin: ' + startDate);
-                            const dates1 = this._diffMonths1(a, b);
-                            const endDate = new Date();
-                            console.warn('end: ' + endDate);
-                            console.warn('end - start: ' + (endDate - startDate));
-                        }}
-                    />
-
-
-                    <Button
-                        title="Bottom Modal with Title 1"
-                        onPress={() => {
-                            this.alertRef.show();
-                        }}
-                    />
-
-                    <Button
-                        title="Bottom Modal without Title 2"
-                        onPress={() => {
-                            this.alertRef1.show();
-                        }}
-                    />
-
-                    <Button
-                        title="Show Modal - Scale Animation 3"
-                        onPress={() => {
-                            this.alertRef2.show();
-                        }}
-                    />
-
-
-                    <Button
-                        title="Bottom Modal with Title"
-                        onPress={() => {
-                            this.setState({
-                                bottomModalAndTitle: true,
-                            });
-                        }}
-                    />
-
-                    <Button
-                        title="Bottom Modal without Title"
-                        onPress={() => {
-                            this.setState({
-                                bottomModal: true,
-                            });
+                            this.setState({bottomModal: true});
                         }}
                     />
                 </View>
 
-
-                <WKAlert
-                    ref={ref => this.alertRef = ref}
-                    title={'Tips'}
-                    message={'Are you sure you want to logout?'}
-                    defaultTitle={'Cancel'}
-                    okTitle={'Confirm'}
-                    defaultCallback={() => {
-                    }}
-                    okCallback={() => {
-                    }}
-                />
-
-
-                <WKAlert
-                    ref={ref => this.alertRef1 = ref}
-                    // title={'温馨提示'}
-                    // titleTextStyle={{color: 'red'}}
-                    message={'你确定要退出登录吗？'}
-                    // messageTextStyle={{color: 'green'}}
-                    // defaultTitle={'取消'}
-                    // defaultTextStyle={{color: 'red'}}
-                    // okTitle={'确定'}
-                    // okTextStyle={{color: 'cyan'}}
-                    defaultCallback={() => console.warn('good')}
-                    okCallback={() => console.warn('bad')}
-                />
-
-                <WKAlert
-                    ref={ref => this.alertRef2 = ref}
-                    // title={'温馨提示'}
-                    // titleTextStyle={{color: 'red'}}
-                    message={'你确定要退出登录吗？'}
-                    // messageTextStyle={{color: 'green'}}
-                    defaultTitle={'取消'}
-                    // defaultTextStyle={{color: 'red'}}
-                    okTitle={'确定'}
-                    okTextStyle={{color: WKAlert.DEFAULT_ALERT_COLORS.RED}}
-                    defaultCallback={() => console.warn('good')}
-                    okCallback={() => console.warn('bad')}
-                />
-
-                <BottomModal
-                    visible={this.state.bottomModalAndTitle}
-                    onTouchOutside={() => {
-                        console.warn(111);
-                        this.setState({bottomModalAndTitle: false});
-                    }}
-                    height={0.3}
-                    width={1}
-                    onSwipeOut={() => {
-                        console.warn(222);
-                        this.setState({bottomModalAndTitle: false});
-                    }}
-                    swipeDirection={'right'}
-                    modalAnimation={new SlideAnimation({slideFrom: 'right'})}
-                    modalTitle={
-                        <ModalTitle
-                            style={{backgroundColor: 'white'}}
-                            title="Bottom Modal"
-                            hasTitleBar={false}
-                        />
-                    }
-                >
-                    <ModalContent
-                        style={{
-                            flex: 1,
-                            backgroundColor: 'fff',
-                        }}
-                    >
-                        <Text>
-                            Bottom Modal with Title
-                        </Text>
-                    </ModalContent>
-                </BottomModal>
             </View>
         );
     }

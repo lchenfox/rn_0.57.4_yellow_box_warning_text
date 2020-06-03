@@ -1,23 +1,17 @@
 import React, {Component} from 'react';
-import {
-    Dimensions,
-    FlatList,
-    View,
-    Text,
-    TouchableOpacity,
-} from 'react-native';
+import {FlatList, View} from 'react-native';
 import PropTypes from 'prop-types';
 import * as Constants from "../contants";
 import WeekBar from "./WeekBar";
-import NavigationBar from "./NavigationBar";
-import {getWeekDays} from "../contants";
+import ToolBar from "./ToolBar";
+import ListItem from "./ListItem";
 
 class CalendarList extends Component {
 
     state = {
-        dates1: [],
-        selectedDate1: '',
-        selectedDate2: '',
+        dataSource: [],
+        startDate: '',
+        endDate: '',
     };
 
     componentDidMount() {
@@ -27,41 +21,59 @@ class CalendarList extends Component {
             firstDayOnWeeks,
         } = this.props;
         this.setState({
-            dates1: Constants.getDates(minDate, maxDate, firstDayOnWeeks),
+            dataSource: Constants.getDates(minDate, maxDate, firstDayOnWeeks),
         });
     }
 
     /**
-     low performance: Date.parse(selectedDate1.replace(/-/g, '/')) < Date.parse(_d.replace(/-/g, '/'))
-     so use the following function to compare two dates
-     if date > another return true, else false
+     * Select date call back with date parameter.
+     * @param date A date string representing the date selected such as '2020-5-11'.
      */
-    _isMoreThan = (date, another) => {
-        if (!date || typeof date !== 'string' || !another || typeof date !== 'string') return false;
-        const dateArr = date.split('-');
-        const anotherArr = another.split('-');
-
-        // year1 > year2
-        if (parseInt(dateArr[0]) > parseInt(anotherArr[0])) return true;
-
-        // year1 = year2
-        if (parseInt(dateArr[0]) === parseInt(anotherArr[0])) {
-            // month1 > month2
-            if (parseInt(dateArr[1]) > parseInt(anotherArr[1])) return true;
-            // month1 = month2
-            if (parseInt(dateArr[1]) === parseInt(anotherArr[1])) {
-                // day1 > day2
-                return parseInt(dateArr[2]) > parseInt(anotherArr[2]);
-            }
+    _selectDate = date => {
+        const {startDate, endDate} = this.state;
+        if (startDate && endDate) {
+            this.setState({
+                startDate: date,
+                endDate: '',
+            });
+            return;
         }
-
-        // year1 < year2
-        return false;
+        if (startDate) {
+            const isBigger = Constants.compareDatesWith(startDate, date);
+            this.setState({
+                startDate: isBigger ? date : startDate,
+                endDate: isBigger ? startDate : date,
+            });
+        } else {
+            this.setState({startDate: date});
+        }
     };
 
-    _hasSelectedTextBackgroundColor = (selectedDate1, selectedDate2, currentDate) => {
-        if (!selectedDate1 || !selectedDate2) return false;
-        return !!(this._isMoreThan(currentDate, selectedDate1) && this._isMoreThan(selectedDate2, currentDate));
+    _renderItem = ({item}) => {
+        const {
+            minDate,
+            maxDate,
+            headerTitleType,
+            listItemStyle,
+            selectedDateMarkColor,
+            selectedDateMarkRangeColor,
+            beyondDatesDisabled,
+            beyondDatesDisabledTextColor,
+        } = this.props;
+        return <ListItem
+            item={item}
+            startDate={this.state.startDate}
+            endDate={this.state.endDate}
+            minDate={minDate.replace(/\//g, '-')}
+            maxDate={maxDate.replace(/\//g, '-')}
+            selectDate={this._selectDate}
+            headerTitleType={headerTitleType}
+            listItemStyle={listItemStyle}
+            selectedDateMarkColor={selectedDateMarkColor}
+            selectedDateMarkRangeColor={selectedDateMarkRangeColor}
+            beyondDatesDisabled={beyondDatesDisabled}
+            beyondDatesDisabledTextColor={beyondDatesDisabledTextColor}
+        />;
     };
 
     render() {
@@ -71,14 +83,17 @@ class CalendarList extends Component {
             containerStyle,
             scrollContentStyle,
 
-            showNavigationBar,
-            navigationBarStyle,
-            navigationBarCancelStyle,
-            navigationBarConfirmStyle,
+            showToolBar,
+            toolBarPosition,
+            toolBarStyle,
+            toolBarCancelStyle,
+            toolBarConfirmStyle,
             cancelText,
             confirmText,
             cancel,
             confirm,
+            cancelDisabled,
+            confirmDisabled,
 
             showWeeks,
             weeks,
@@ -89,25 +104,30 @@ class CalendarList extends Component {
 
         } = this.props;
 
-        const f1 = Constants.SCREEN_WIDTH / 7;
-        const f2 = f1.toString();
-        const f3 = f2.substring(0, f2.indexOf('.') >= 0 ? (f2.indexOf('.') + 3) : 3);
-        const text_width = parseFloat(f3);
-
         const _wks = weeksChineseType && weeks === Constants.DEFAULT_WEEK_EN ? Constants.DEFAULT_WEEK_ZH : weeks;
-        const _weeks = getWeekDays(_wks, firstDayOnWeeks);
+        const _weeks = Constants.getWeekDays(_wks, firstDayOnWeeks);
+
+        const _toolBar = (<ToolBar
+            style={toolBarStyle}
+            cancelStyle={toolBarCancelStyle}
+            confirmStyle={toolBarConfirmStyle}
+            cancelText={cancelText}
+            cancel={() => {
+                cancel && typeof cancel === 'function' && cancel();
+            }}
+            confirm={() => {
+                const {startDate, endDate} = this.state;
+                const dates = [Constants.toStandardDateString(startDate), Constants.toStandardDateString(endDate)];
+                confirm && typeof confirm === 'function' && confirm(dates);
+            }}
+            confirmText={confirmText}
+            cancelDisabled={cancelDisabled}
+            confirmDisabled={confirmDisabled}
+        />);
 
         return (
             <View style={[{flex: 1}, containerStyle]}>
-                {showNavigationBar && <NavigationBar
-                    style={navigationBarStyle}
-                    cancelStyle={navigationBarCancelStyle}
-                    confirmStyle={navigationBarConfirmStyle}
-                    cancelText={cancelText}
-                    cancel={cancel}
-                    confirm={confirm}
-                    confirmText={confirmText}
-                />}
+                {showToolBar && toolBarPosition === Constants.DEFAULT_TOOL_BAR_POSITION.TOP && _toolBar}
                 {showWeeks && <WeekBar
                     weeks={_weeks}
                     style={weeksStyle}
@@ -118,98 +138,14 @@ class CalendarList extends Component {
                     automaticallyAdjustContentInsets={false}
                     ref={ref => this.flatList = ref}
                     keyExtractor={item => `${item.year}-${item.month}`}
-                    data={this.state.dates1}
+                    data={this.state.dataSource}
                     extraData={this.state}
-                    renderItem={({item, index}) => {
-                        // return <Text style={{fontSize: 30, color: 'red'}}>Hello, world!</Text>
-                        // console.warn('render item');
-                        return <View style={{width: Dimensions.get('window').width}}>
-                            <View style={{flexDirection: 'row'}}>
-                                <TouchableOpacity onPress={() => {
-                                    console.warn('left: scroll to index');
-                                    if (index === 0) return;
-                                    this.flatList.scrollToIndex({index: index - 1});
-                                }}>
-                                    <Text
-                                        style={{height: 50}}>({item.year + '-' + item.month})Left</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => {
-                                    this.props.onRightClick();
-                                    console.warn(index)
-                                    if (index === this.state.dates1.length - 1) return;
-                                    this.flatList.scrollToIndex({index: index + 1});
-                                }}>
-                                    <Text
-                                        style={{height: 50}}>({item.year + '-' + item.month})Right</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{flexDirection: 'row', flexWrap: 1}}>
-                                {item.days.map((day, index) => {
-                                    const _d = `${item.year}-${item.month}-${day}`;
-                                    const {selectedDate1, selectedDate2} = this.state;
-                                    let textBgColor = 'transparent';
-
-                                    if (selectedDate1 === _d || selectedDate2 === _d) {
-                                        textBgColor = 'orange';
-                                    }
-
-                                    if (this._hasSelectedTextBackgroundColor(selectedDate1, selectedDate2, _d)) {
-                                        textBgColor = 'yellow';
-                                    }
-
-                                    return day < 0 ? <View key={index} style={{width: text_width}}/> :
-                                        <TouchableOpacity
-                                            key={index}
-                                            onPress={() => {
-                                                if (selectedDate1 && selectedDate2) {
-                                                    this.setState({
-                                                        selectedDate1: _d,
-                                                        selectedDate2: null,
-                                                    });
-                                                } else {
-                                                    if (selectedDate1) {
-                                                        const isBigger = this._isMoreThan(selectedDate1, _d);
-                                                        this.setState({
-                                                            selectedDate1: isBigger ? _d : selectedDate1,
-                                                            selectedDate2: isBigger ? selectedDate1 : _d,
-                                                        });
-                                                    } else {
-                                                        this.setState({selectedDate1: _d});
-                                                    }
-                                                }
-                                            }}
-                                            activeOpacity={1}
-                                            style={{width: text_width}}
-                                        >
-                                            <View style={{
-                                                backgroundColor: textBgColor === 'orange' ? 'yellow' : textBgColor,
-                                                borderTopRightRadius: selectedDate1 && selectedDate2 ? (selectedDate1 === _d ? 0 : ((selectedDate2 === _d) ? 10 : 0)) : 10,
-                                                borderBottomRightRadius: selectedDate1 && selectedDate2 ? (selectedDate1 === _d ? 0 : ((selectedDate2 === _d) ? 10 : 0)) : 10,
-                                                borderTopLeftRadius: selectedDate1 && selectedDate2 ? (selectedDate2 === _d ? 0 : ((selectedDate1 === _d) ? 10 : 0)) : 10,
-                                                borderBottomLeftRadius: selectedDate1 && selectedDate2 ? (selectedDate2 === _d ? 0 : ((selectedDate1 === _d) ? 10 : 0)) : 10,
-                                                width: (index + 1) % 7 === 0 ? text_width - 5 : (index % 7 === 0 ? text_width - 5 : text_width),
-                                                marginRight: (index + 1) % 7 === 0 ? 5 : 0,
-                                                marginLeft: index % 7 === 0 ? 5 : 0,
-                                                marginVertical: 4,
-                                            }}>
-                                                <View style={{
-                                                    borderRadius: textBgColor === 'orange' ? 10 : 0,
-                                                    backgroundColor: textBgColor === 'orange' ? 'orange' : 'transparent'
-                                                }}>
-                                                    <Text style={{
-                                                        textAlign: 'center',
-                                                        paddingVertical: 3,
-                                                        color: '#3e3e3e',
-                                                    }}>{day}</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                })}
-                            </View>
-                        </View>
-                    }}
+                    horizontal={false}
+                    // scrollEnabled={tr}
+                    {...this.props}
+                    renderItem={this._renderItem}
                 />
+                {showToolBar && toolBarPosition === Constants.DEFAULT_TOOL_BAR_POSITION.BOTTOM && _toolBar}
             </View>
         );
     }
@@ -228,53 +164,72 @@ CalendarList.propTypes = {
     scrollContentStyle: PropTypes.any,
 
     /**
-     * Whether to show navigation bar, default is true. If false, hide navigation bar on top.
+     * Whether to show tool bar, default is true. If false, hide tool bar on top.
      */
-    showNavigationBar: PropTypes.bool,
+    showToolBar: PropTypes.bool,
 
     /**
-     * navigation bar view styles, passed like {backgroundColor: 'red'} as you like.
+     * The position of tool bar, default is 'top' that is at the top of screen. So far, just both 'top' and 'bottom'
+     * are supported.
      */
-    navigationBarStyle: PropTypes.any,
+    toolBarPosition: PropTypes.string,
 
     /**
-     * navigation bar cancel button text styles, passed like {color: 'red', fontSize: 15} as you like.
+     * tool bar view styles, passed like {backgroundColor: 'red'} as you like.
      */
-    navigationBarCancelStyle: PropTypes.any,
+    toolBarStyle: PropTypes.any,
 
     /**
-     * navigation bar confirm button text styles, passed like {color: 'red', fontSize: 15} as you like.
+     * tool bar cancel button text styles, passed like {color: 'red', fontSize: 15} as you like.
+     * Note that you can control the active opacity of the button through {activeOpacity: 1}.
      */
-    navigationBarConfirmStyle: PropTypes.any,
+    toolBarCancelStyle: PropTypes.any,
 
     /**
-     * navigation bar cancel button text, default is "Cancel".
+     * tool bar confirm button text styles, passed like {color: 'red', fontSize: 15} as you like.
+     * Note that you can control the active opacity of the button through {activeOpacity: 1}.
+     */
+    toolBarConfirmStyle: PropTypes.any,
+
+    /**
+     * tool bar cancel button text, default is "Cancel".
      */
     cancelText: PropTypes.string,
 
     /**
-     * navigation bar confirm button text, default is "Confirm".
+     * tool bar confirm button text, default is "Confirm".
      */
     confirmText: PropTypes.string,
 
     /**
-     * navigation bar cancel button callback.
+     * tool bar cancel button callback.
      */
     cancel: PropTypes.func,
 
     /**
-     * navigation bar confirm button callback.
+     * tool bar confirm button callback with a date array like ["2016-01-09", "2019-09-18"]. "2016-01-09" is the
+     * start date(min date) you selected. "2019-09-18" is the end date(max date) you selected. If nothing is selected,
+     * the array's elements will be empty string like ["", ""].
      */
     confirm: PropTypes.func,
 
+    /**
+     * Whether to disable the cancel button. Default is false.
+     */
+    cancelDisabled: PropTypes.bool,
 
     /**
-     * Min date to limit, default is "2015-01-01".
+     * Whether to disable the confirm button. Default is false.
+     */
+    confirmDisabled: PropTypes.bool,
+
+    /**
+     * Min date to limit, default is "2015-01-01". Other supported formats: "2015-1-1", "2015/01/01", "2015/1/1".
      */
     minDate: PropTypes.string,
 
     /**
-     * Max date to limit, default is today calculated by new Date().
+     * Max date to limit, default is today calculated by new Date(). Other supported formats: "2015-1-1", "2015/01/01", "2015/1/1".
      */
     maxDate: PropTypes.string,
 
@@ -313,22 +268,86 @@ CalendarList.propTypes = {
      * For week days, set the week day text styles like {color: 'blue', fontSize: 14}
      */
     weeksTextStyle: PropTypes.any,
+
+    /**
+     * Display form of the header title. Default is 0. Take "2020-04" date as an example:
+     * 0:  "2020-04"
+     * 1:  "2020年4月"
+     * 2:  "Apr 2020"
+     * 3:  "April 2020"
+     * 4:  "2020/04"
+     * 5:  "04/2020"
+     */
+    headerTitleType: PropTypes.number,
+
+    /**
+     * Content styles containing header title and days content. This is a nesting object style. So if you want to set
+     * some specific style such as "headerTitle", you can set it to {headerTitle: {fontSize: 18, color: 'red'}}. Details
+     * are as follows:
+     {
+        container: {
+            flex: 1,
+        },
+        headerTitleContainer: {
+            height: 50,
+        },
+        headerTitle: {
+            fontSize: 17,
+        },
+        dayContent: {
+            backgroundColor: 'red',
+        },
+        day: {
+            color: '#3e3e3e',
+        },
+     };
+     */
+    listItemStyle: PropTypes.any,
+
+    /**
+     * Selected date mark background color for start date and end date. Default is 'magenta'.
+     */
+    selectedDateMarkColor: PropTypes.string,
+
+    /**
+     * Selected date mark background color between start date and end date. Default is 'skyblue'.
+     */
+    selectedDateMarkRangeColor: PropTypes.string,
+
+    /**
+     * When the date is out of minDate or maxDate, whether to disable the button. Default is true.
+     */
+    beyondDatesDisabled: PropTypes.bool,
+
+    /**
+     * When the date is out of minDate or maxDate, the button text color. Default is '#b9b9b9'.
+     */
+    beyondDatesDisabledTextColor: PropTypes.string,
 };
 
 CalendarList.defaultProps = {
-    showNavigationBar: true,
+    showToolBar: true,
+    toolBarPosition: Constants.DEFAULT_TOOL_BAR_POSITION.TOP,
     cancelText: Constants.DEFAULT_CANCEL_TEXT,
     confirmText: Constants.DEFAULT_CONFIRM_TEXT,
     cancel: () => {
     },
     confirm: () => {
     },
+    cancelDisabled: false,
+    confirmDisabled: false,
     minDate: Constants.DEFAULT_MIN_DATE,
     maxDate: Constants.DEFAULT_MAX_DATE,
     showWeeks: true,
     weeks: Constants.DEFAULT_WEEK_EN,
     weeksChineseType: false,
     firstDayOnWeeks: 0,
+    headerTitleType: 0,
+    listItemStyle: {},
+    selectedDateMarkColor: 'magenta',
+    selectedDateMarkRangeColor: 'skyblue',
+    beyondDatesDisabled: true,
+    beyondDatesDisabledTextColor: '#b9b9b9',
 };
 
 export default CalendarList;

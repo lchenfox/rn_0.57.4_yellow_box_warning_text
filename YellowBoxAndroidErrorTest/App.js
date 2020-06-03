@@ -17,27 +17,36 @@ export default class App extends Component {
 
     state = {
         bottomModal: false,
-        dates1: [],
-        preDays: {},
         selectedDate1: '',
         selectedDate2: '',
         visible: false,
     };
-
 
     render() {
 
         return (
             <View style={{flex: 1}}>
 
-
                 <Modal animated={true} visible={this.state.visible}>
                     <CalendarList
                         weeksChineseType={true}
                         // containerStyle={{backgroundColor: 'red'}}
                         // scrollContentStyle={{backgroundColor: 'green'}}
-                        onRightClick={() => this.setState({visible: false})}
-                    />
+                        cancel={() => this.setState({visible: false})}
+                        headerTitleType={2}
+                        listItemStyle={{headerTitle: {color: 'red'}}}
+                        confirm={data => {
+                            console.warn(data)
+                            this.setState({
+                                selectedDate1: data[0],
+                                selectedDate2: data[1],
+                                visible: false,
+                            });
+                        }}
+                        minDate={'2018-5-23'}
+                    >
+                        <View style={{height: 73, backgroundColor: 'gray'}}/>
+                    </CalendarList>
                 </Modal>
 
                 {/*<BottomModal*/}
@@ -63,12 +72,13 @@ export default class App extends Component {
                 {/*    </ModalContent>*/}
                 {/*</BottomModal>*/}
 
-                <View style={{backgroundColor: 'yellow', marginTop: 200}}>
+                <View style={{marginTop: 200}}>
+                    <Text style={{color: 'red', fontSize: 18, padding: 15}}>start date: {this.state.selectedDate1}</Text>
+                    <Text style={{color: 'green', fontSize: 18, padding: 15}}>end date: {this.state.selectedDate2}</Text>
                     <Button
                         title="系统Modal测试日期"
                         onPress={() => {
                             this.setState({visible: true});
-
                             // this.setState({bottomModal: true});
                         }}
                     />

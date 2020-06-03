@@ -123,11 +123,7 @@ class ListItem extends React.Component {
                     style={[listItemStyles.headerTitle, listItemStyle.headerTitle || {}]}>{this._headerTitle(item)}</Text>
             </View>
             <View style={[listItemStyles.dayContent, listItemStyle.dayContent || {}]}>
-                {
-                    item.days.map((day, index) => {
-                        return this._renderDays(day, index);
-                    })
-                }
+                {item.days.map((day, index) => this._renderDays(day, index))}
             </View>
         </View>
     }
@@ -147,6 +143,7 @@ ListItem.propTypes = {
     listItemStyle: PropTypes.object,
     selectedDateMarkColor: PropTypes.string,
     selectedDateMarkRangeColor: PropTypes.string,
+    horizontal: PropTypes.bool,
 };
 
 export default ListItem;

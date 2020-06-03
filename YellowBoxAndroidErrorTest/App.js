@@ -28,6 +28,7 @@ export default class App extends Component {
             <View style={{flex: 1}}>
 
                 <Modal animated={true} visible={this.state.visible}>
+                    <View style={{height: 44}}/>
                     <CalendarList
                         weeksChineseType={true}
                         // containerStyle={{backgroundColor: 'red'}}
@@ -43,34 +44,57 @@ export default class App extends Component {
                                 visible: false,
                             });
                         }}
+                        containerStyle={{flex: 1}}
                         minDate={'2018-5-23'}
+                        // horizontal={true}
                     >
                         <View style={{height: 73, backgroundColor: 'gray'}}/>
                     </CalendarList>
                 </Modal>
 
-                {/*<BottomModal*/}
-                {/*    visible={this.state.bottomModal}*/}
-                {/*    onTouchOutside={() => {*/}
-                {/*        // console.warn(333);*/}
-                {/*        this.setState({bottomModal: false});*/}
-                {/*    }}*/}
-                {/*    onSwipeOut={() => {*/}
-                {/*        // console.warn(444);*/}
-                {/*        this.setState({bottomModal: false});*/}
-                {/*    }}*/}
-                {/*    // modalStyle={{  }}*/}
-                {/*>*/}
-                {/*    <ModalContent*/}
-                {/*        style={{*/}
-                {/*            backgroundColor: 'fff',*/}
-                {/*            paddingHorizontal: 0,*/}
-                {/*            // height: '100%',*/}
-                {/*        }}*/}
-                {/*    >*/}
-                {/*        <CalendarList onRightClick={() => this.setState({bottomModal: false})}/>*/}
-                {/*    </ModalContent>*/}
-                {/*</BottomModal>*/}
+                <BottomModal
+                    visible={this.state.bottomModal}
+                    onTouchOutside={() => {
+                        // console.warn(333);
+                        this.setState({bottomModal: false});
+                    }}
+                    onSwipeOut={() => {
+                        // console.warn(444);
+                        this.setState({bottomModal: false});
+                    }}
+                    // modalStyle={{  }}
+                >
+                    <ModalContent
+                        style={{
+                            backgroundColor: 'fff',
+                            paddingHorizontal: 0,
+                            // height: 300,
+                            // height: '100%',
+                        }}
+                    >
+                        <CalendarList
+                            weeksChineseType={true}
+                            // containerStyle={{backgroundColor: 'red'}}
+                            // scrollContentStyle={{backgroundColor: 'green'}}
+                            cancel={() => this.setState({visible: false})}
+                            headerTitleType={2}
+                            listItemStyle={{headerTitle: {color: 'red'}}}
+                            confirm={data => {
+                                console.warn(data)
+                                this.setState({
+                                    selectedDate1: data[0],
+                                    selectedDate2: data[1],
+                                    visible: false,
+                                });
+                            }}
+                            // scrollContentStyle={{backgroundColor: 'red'}}
+                            minDate={'2018-5-23'}
+                            horizontal={true}
+                        >
+                            <View style={{height: 73, backgroundColor: 'gray'}}/>
+                        </CalendarList>
+                    </ModalContent>
+                </BottomModal>
 
                 <View style={{marginTop: 200}}>
                     <Text style={{color: 'red', fontSize: 18, padding: 15}}>start date: {this.state.selectedDate1}</Text>

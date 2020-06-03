@@ -59,6 +59,7 @@ class CalendarList extends Component {
             selectedDateMarkRangeColor,
             beyondDatesDisabled,
             beyondDatesDisabledTextColor,
+            horizontal,
         } = this.props;
         return <ListItem
             item={item}
@@ -73,12 +74,19 @@ class CalendarList extends Component {
             selectedDateMarkRangeColor={selectedDateMarkRangeColor}
             beyondDatesDisabled={beyondDatesDisabled}
             beyondDatesDisabledTextColor={beyondDatesDisabledTextColor}
+            horizontal={horizontal}
         />;
     };
 
     render() {
 
         const {
+
+            horizontal,
+            showsHorizontalScrollIndicator,
+            showsVerticalScrollIndicator,
+            scrollEnabled,
+            pagingEnabled,
 
             containerStyle,
             scrollContentStyle,
@@ -126,7 +134,7 @@ class CalendarList extends Component {
         />);
 
         return (
-            <View style={[{flex: 1}, containerStyle]}>
+            <View style={containerStyle}>
                 {showToolBar && toolBarPosition === Constants.DEFAULT_TOOL_BAR_POSITION.TOP && _toolBar}
                 {showWeeks && <WeekBar
                     weeks={_weeks}
@@ -134,14 +142,17 @@ class CalendarList extends Component {
                     textStyle={weeksTextStyle}
                 />}
                 <FlatList
-                    style={[{flex: 1}, scrollContentStyle]}
+                    style={scrollContentStyle}
                     automaticallyAdjustContentInsets={false}
                     ref={ref => this.flatList = ref}
                     keyExtractor={item => `${item.year}-${item.month}`}
                     data={this.state.dataSource}
                     extraData={this.state}
-                    horizontal={false}
-                    // scrollEnabled={tr}
+                    horizontal={horizontal}
+                    showsHorizontalScrollIndicator={showsHorizontalScrollIndicator}
+                    showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+                    scrollEnabled={scrollEnabled}
+                    pagingEnabled={pagingEnabled}
                     {...this.props}
                     renderItem={this._renderItem}
                 />
@@ -152,6 +163,31 @@ class CalendarList extends Component {
 }
 
 CalendarList.propTypes = {
+
+    /**
+     * Seen as FlatList component.
+     */
+    horizontal: PropTypes.bool,
+
+    /**
+     * Seen as FlatList component.
+     */
+    showsHorizontalScrollIndicator: PropTypes.bool,
+
+    /**
+     * Seen as FlatList component.
+     */
+    showsVerticalScrollIndicator: PropTypes.bool,
+
+    /**
+     * Seen as FlatList component.
+     */
+    scrollEnabled: PropTypes.bool,
+
+    /**
+     * Seen as FlatList component.
+     */
+    pagingEnabled: PropTypes.bool,
 
     /**
      * Styles for container, you can set it as any view prop styles such as {backgroundColor: 'red'}
@@ -241,7 +277,7 @@ CalendarList.propTypes = {
     /**
      * Week days to show, default is from Sunday to Saturday, namely ['Su','Mo','Tu','We','Th','Fr','Sa'].
      * Note that if you want to custom "weeks", then you have to accomplish "firstDayOnWeeks" at the same time.
-     * For example, you passed "['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" to "weeks", you also need to pass 1 to
+     * For example, you passed "['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" to "weeks", you must pass 1 to
      * "firstDayOnWeeks" equal to "firstDayOnWeeks={1}". What's more, 1 means Monday, 2 means Tuesday, ..., 0 Means Sunday.
      */
     weeks: PropTypes.array,
@@ -326,6 +362,7 @@ CalendarList.propTypes = {
 };
 
 CalendarList.defaultProps = {
+    horizontal: false,
     showToolBar: true,
     toolBarPosition: Constants.DEFAULT_TOOL_BAR_POSITION.TOP,
     cancelText: Constants.DEFAULT_CANCEL_TEXT,

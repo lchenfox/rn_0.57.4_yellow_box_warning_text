@@ -1,10 +1,10 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 
 export const toolBarStyles = StyleSheet.create({
     view: {
         flexDirection: 'row',
-        marginTop: 20,
-        height: 64,
+        paddingTop: 2,
+        paddingBottom: 8,
         justifyContent: 'space-between',
         alignItems: 'center',
     },
@@ -50,6 +50,7 @@ export const listItemStyles = StyleSheet.create({
         color: '#3e3e3e',
     },
     dayContent: {
+        width: Dimensions.get('window').width, // Adapt to "horizontal" props.
         flexDirection: 'row',
         flexWrap: 'wrap',
     },

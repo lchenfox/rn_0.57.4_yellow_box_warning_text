@@ -68,17 +68,26 @@ export default class App extends Component {
                         style={{
                             backgroundColor: 'fff',
                             paddingHorizontal: 0,
+                            paddingVertical: 12,
+                            paddingBottom: 24,
                             // height: 300,
                             // height: '100%',
                         }}
                     >
                         <CalendarList
+                            ref={ref => this.dateRef = ref}
                             weeksChineseType={true}
                             // containerStyle={{backgroundColor: 'red'}}
                             // scrollContentStyle={{backgroundColor: 'green'}}
-                            cancel={() => this.setState({visible: false})}
+                            cancel={() => {
+                                this.dateRef.scrollToIndex({index: 3})
+                                return;
+                                this.setState({bottomModal: false});
+                            }}
                             headerTitleType={2}
                             listItemStyle={{headerTitle: {color: 'red'}}}
+                            // selectedDateMarkType={'rectangle'}
+                            selectedDateMarkColor={'green'}
                             confirm={data => {
                                 console.warn(data)
                                 this.setState({
@@ -87,7 +96,8 @@ export default class App extends Component {
                                     visible: false,
                                 });
                             }}
-                            pagingEnabled={false}
+                            pagingEnabled={true}
+                            showsHorizontalScrollIndicator={false}
                             // scrollContentStyle={{backgroundColor: 'red'}}
                             minDate={'2018-5-23'}
                             horizontal={true}

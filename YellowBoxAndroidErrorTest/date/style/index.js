@@ -8,6 +8,9 @@ export const toolBarStyles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    title: {
+        fontSize: 17,
+    },
     cancelText: {
         paddingVertical: 5,
         paddingHorizontal: 15,

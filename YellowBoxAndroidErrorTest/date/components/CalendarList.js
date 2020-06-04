@@ -29,7 +29,7 @@ class CalendarList extends Component {
      * Select date call back with date parameter.
      * @param date A date string representing the date selected such as '2020-5-11'.
      */
-    _selectDate = date => {
+    _selectDate = (date, index) => {
         const {startDate, endDate} = this.state;
         if (startDate && endDate) {
             this.setState({
@@ -47,6 +47,8 @@ class CalendarList extends Component {
         } else {
             this.setState({startDate: date});
         }
+        const {onPressDate} = this.props;
+        onPressDate && typeof onPressDate === 'function' && onPressDate(Constants.toStandardDateString(date));
     };
 
     _renderItem = ({item}) => {
@@ -79,6 +81,15 @@ class CalendarList extends Component {
         />;
     };
 
+    /**
+     * See FlatList docs. If you'd like to do something outside. e.g: you maybe want to scroll to the end. Then you can
+     * use "<CalendarList ref={ref => this.calendarList = ref}; this.calendarList.scrollToEnd()" to make it work for you.
+     */
+    scrollToIndex = params => this.flatList.scrollToIndex(params);
+    scrollToItem = params => this.flatList.scrollToItem(params);
+    scrollToOffset = params => this.flatList.scrollToOffset(params);
+    scrollToEnd = params => this.flatList.scrollToEnd(params);
+
     render() {
 
         const {
@@ -97,6 +108,8 @@ class CalendarList extends Component {
             toolBarStyle,
             toolBarCancelStyle,
             toolBarConfirmStyle,
+            titleStyle,
+            titleText,
             cancelText,
             confirmText,
             cancel,
@@ -120,6 +133,8 @@ class CalendarList extends Component {
             style={toolBarStyle}
             cancelStyle={toolBarCancelStyle}
             confirmStyle={toolBarConfirmStyle}
+            titleStyle={titleStyle}
+            titleText={titleText}
             cancelText={cancelText}
             cancel={() => {
                 cancel && typeof cancel === 'function' && cancel();
@@ -164,6 +179,11 @@ class CalendarList extends Component {
 }
 
 CalendarList.propTypes = {
+
+    /**
+     * A callback with a date parameter(like "2019-08-09") when the user presses some date item.
+     */
+    onPressDate: PropTypes.func,
 
     /**
      * Seen as FlatList component.
@@ -227,6 +247,16 @@ CalendarList.propTypes = {
      * Note that you can control the active opacity of the button through {activeOpacity: 1}.
      */
     toolBarConfirmStyle: PropTypes.any,
+
+    /**
+     * tool bar title text style, default is "".
+     */
+    titleStyle: PropTypes.any,
+
+    /**
+     * tool bar title text, default is "".
+     */
+    titleText: PropTypes.string,
 
     /**
      * tool bar cancel button text, default is "Cancel".
@@ -342,6 +372,11 @@ CalendarList.propTypes = {
     listItemStyle: PropTypes.any,
 
     /**
+     * Selected date mark type. Default is 'ellipse', other choices: 'semiellipse'.
+     */
+    selectedDateMarkType: PropTypes.string,
+
+    /**
      * Selected date mark background color for start date and end date. Default is 'magenta'.
      */
     selectedDateMarkColor: PropTypes.string,
@@ -384,6 +419,7 @@ CalendarList.defaultProps = {
     firstDayOnWeeks: 0,
     headerTitleType: 0,
     listItemStyle: {},
+    selectedDateMarkType: Constants.DEFAULT_DATE_MARK_TYPE.ELLIPSE,
     selectedDateMarkColor: 'magenta',
     selectedDateMarkRangeColor: 'skyblue',
     beyondDatesDisabled: true,

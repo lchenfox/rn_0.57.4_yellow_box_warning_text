@@ -63,6 +63,12 @@ export const DEFAULT_MONTH_LONG = [
     'December',
 ];
 
+export const DEFAULT_DATE_MARK_TYPE = {
+    ELLIPSE: 'ellipse',
+    SEMIELLIPSE: 'semiellipse',
+    RECTANGLE: 'rectangle',
+};
+
 /**
  * Returns a week array according to the first day.
  * @param weeks

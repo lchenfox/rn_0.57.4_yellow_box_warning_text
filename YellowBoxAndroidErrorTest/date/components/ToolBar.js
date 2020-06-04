@@ -6,6 +6,8 @@ import {toolBarStyles} from "../style";
 const ToolBar = (
     {
         style,
+        titleText,
+        titleStyle,
         cancelStyle,
         confirmStyle,
         cancelText,
@@ -25,6 +27,7 @@ const ToolBar = (
         >
             <Text style={[toolBarStyles.cancelText, cancelStyle]}>{cancelText}</Text>
         </TouchableOpacity>
+        {titleText ? <Text style={[toolBarStyles.title, titleStyle]}>{titleText}</Text> : null}
         <TouchableOpacity
             title={confirmText}
             disabled={confirmDisabled}
@@ -40,6 +43,8 @@ ToolBar.propTypes = {
     style: PropTypes.any,
     cancelStyle: PropTypes.any,
     confirmStyle: PropTypes.any,
+    titleStyle: PropTypes.any,
+    titleText: PropTypes.string,
     cancelText: PropTypes.string,
     confirmText: PropTypes.string,
     cancel: PropTypes.func,

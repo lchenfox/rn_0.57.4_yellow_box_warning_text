@@ -7,9 +7,9 @@ import WeekBar from "./WeekBar";
 
 class ListItem extends React.Component {
 
-    _selectDate = date => {
+    _selectDate = (date, index) => {
         const {selectDate} = this.props;
-        selectDate && typeof selectDate === 'function' && selectDate(date);
+        selectDate && typeof selectDate === 'function' && selectDate(date, index);
     };
 
     _needSelectedRangeBgColor = (startDate, endDate, currentDate) => {
@@ -47,6 +47,7 @@ class ListItem extends React.Component {
             endDate,
             minDate,
             maxDate,
+            selectedDateMarkType,
             selectedDateMarkColor,
             selectedDateMarkRangeColor,
             listItemStyle,
@@ -72,8 +73,15 @@ class ListItem extends React.Component {
         if (startDate === currentDate || endDate === currentDate) {
             selectedDateStyle.borderRadius = 10;
             selectedDateStyle.backgroundColor = selectedDateMarkColor;
-            selectedDateRangeStyle.backgroundColor = selectedDateMarkRangeColor; // all circle
-            // selectedDateRangeStyle.backgroundColor = selectedDateMarkColor; // half circle
+
+            if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.ELLIPSE) {
+                selectedDateRangeStyle.backgroundColor = selectedDateMarkRangeColor;
+            } else if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.SEMIELLIPSE) {
+                selectedDateRangeStyle.backgroundColor = selectedDateMarkColor;
+            } else if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.RECTANGLE) {
+                selectedDateStyle.borderRadius = 0;
+            }
+
             if (startDate && endDate) {
                 if (endDate === currentDate) {
                     selectedDateRangeStyle.borderTopRightRadius = 10;
@@ -104,7 +112,7 @@ class ListItem extends React.Component {
             <TouchableOpacity
                 key={index}
                 disabled={disabled}
-                onPress={() => this._selectDate(currentDate)}
+                onPress={() => this._selectDate(currentDate, index)}
                 activeOpacity={1}
                 style={{width: text_width}}
             >
@@ -163,6 +171,7 @@ ListItem.propTypes = {
     selectDate: PropTypes.func,
     headerTitleType: PropTypes.number,
     listItemStyle: PropTypes.object,
+    selectedDateMarkType: PropTypes.string,
     selectedDateMarkColor: PropTypes.string,
     selectedDateMarkRangeColor: PropTypes.string,
 };

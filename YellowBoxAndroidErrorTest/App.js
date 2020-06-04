@@ -87,9 +87,11 @@ export default class App extends Component {
                                     visible: false,
                                 });
                             }}
+                            pagingEnabled={false}
                             // scrollContentStyle={{backgroundColor: 'red'}}
                             minDate={'2018-5-23'}
                             horizontal={true}
+                            toolBarPosition={'bottom'}
                         >
                             <View style={{height: 73, backgroundColor: 'gray'}}/>
                         </CalendarList>
@@ -102,8 +104,8 @@ export default class App extends Component {
                     <Button
                         title="系统Modal测试日期"
                         onPress={() => {
-                            this.setState({visible: true});
-                            // this.setState({bottomModal: true});
+                            // this.setState({visible: true});
+                            this.setState({bottomModal: true});
                         }}
                     />
                 </View>

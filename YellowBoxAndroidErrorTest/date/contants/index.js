@@ -9,8 +9,8 @@ export const DEFAULT_MAX_DATE = getToday();
 export const DEFAULT_CANCEL_TEXT = 'Cancel';
 export const DEFAULT_CONFIRM_TEXT = 'Confirm';
 export const DEFAULT_TOOL_BAR_POSITION = {
-    TOP: 'TOP',
-    BOTTOM: 'BOTTOM',
+    TOP: 'top',
+    BOTTOM: 'bottom',
 };
 
 export const DEFAULT_WEEK_ZH = [

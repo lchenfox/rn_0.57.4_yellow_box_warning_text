@@ -75,6 +75,7 @@ class CalendarList extends Component {
             beyondDatesDisabled={beyondDatesDisabled}
             beyondDatesDisabledTextColor={beyondDatesDisabledTextColor}
             horizontal={horizontal}
+            {...this.props}
         />;
     };
 
@@ -136,7 +137,7 @@ class CalendarList extends Component {
         return (
             <View style={containerStyle}>
                 {showToolBar && toolBarPosition === Constants.DEFAULT_TOOL_BAR_POSITION.TOP && _toolBar}
-                {showWeeks && <WeekBar
+                {showWeeks && ((horizontal && pagingEnabled) || (!horizontal)) && <WeekBar
                     weeks={_weeks}
                     style={weeksStyle}
                     textStyle={weeksTextStyle}
@@ -180,12 +181,12 @@ CalendarList.propTypes = {
     showsVerticalScrollIndicator: PropTypes.bool,
 
     /**
-     * Seen as FlatList component.
+     * Seen as FlatList component. Default is true.
      */
     scrollEnabled: PropTypes.bool,
 
     /**
-     * Seen as FlatList component.
+     * Seen as FlatList component. Default is false.
      */
     pagingEnabled: PropTypes.bool,
 
@@ -363,6 +364,8 @@ CalendarList.propTypes = {
 
 CalendarList.defaultProps = {
     horizontal: false,
+    scrollEnabled: true,
+    pagingEnabled: false,
     showToolBar: true,
     toolBarPosition: Constants.DEFAULT_TOOL_BAR_POSITION.TOP,
     cancelText: Constants.DEFAULT_CANCEL_TEXT,

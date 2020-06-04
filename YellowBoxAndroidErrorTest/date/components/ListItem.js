@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
 import * as Constants from "../contants";
 import {listItemStyles} from "../style";
+import WeekBar from "./WeekBar";
 
 class ListItem extends React.Component {
 
@@ -116,12 +117,30 @@ class ListItem extends React.Component {
     };
 
     render() {
-        const {item, listItemStyle} = this.props;
+        const {
+            item,
+            listItemStyle,
+            showWeeks,
+            horizontal,
+            pagingEnabled,
+            weeks,
+            weeksTextStyle,
+            weeksStyle,
+            weeksChineseType,
+            firstDayOnWeeks,
+        } = this.props;
+        const _wks = weeksChineseType && weeks === Constants.DEFAULT_WEEK_EN ? Constants.DEFAULT_WEEK_ZH : weeks;
+        const _weeks = Constants.getWeekDays(_wks, firstDayOnWeeks);
         return <View style={[listItemStyles.container, listItemStyle.container || {}]}>
             <View style={[listItemStyles.headerTitleContainer, listItemStyle.headerTitleContainer || {}]}>
                 <Text
                     style={[listItemStyles.headerTitle, listItemStyle.headerTitle || {}]}>{this._headerTitle(item)}</Text>
             </View>
+            {showWeeks && horizontal && !pagingEnabled && <WeekBar
+                weeks={_weeks}
+                style={weeksStyle}
+                textStyle={weeksTextStyle}
+            />}
             <View style={[listItemStyles.dayContent, listItemStyle.dayContent || {}]}>
                 {item.days.map((day, index) => this._renderDays(day, index))}
             </View>
@@ -131,6 +150,9 @@ class ListItem extends React.Component {
 }
 
 ListItem.propTypes = {
+    showWeeks: PropTypes.bool,
+    horizontal: PropTypes.bool,
+    pagingEnabled: PropTypes.bool,
     item: PropTypes.object.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
@@ -143,7 +165,6 @@ ListItem.propTypes = {
     listItemStyle: PropTypes.object,
     selectedDateMarkColor: PropTypes.string,
     selectedDateMarkRangeColor: PropTypes.string,
-    horizontal: PropTypes.bool,
 };
 
 export default ListItem;

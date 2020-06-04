@@ -5,6 +5,8 @@ import * as Constants from "../contants";
 import {listItemStyles} from "../style";
 import WeekBar from "./WeekBar";
 
+const PADDING = 12;
+
 class ListItem extends React.Component {
 
     _selectDate = (date, index) => {
@@ -55,8 +57,7 @@ class ListItem extends React.Component {
             beyondDatesDisabledTextColor,
         } = this.props;
 
-        const padding = 12;
-        const f1 = (Constants.SCREEN_WIDTH - padding) / 7;
+        const f1 = (Constants.SCREEN_WIDTH - PADDING) / 7;
         const f2 = f1.toString();
         const f3 = f2.substring(0, f2.indexOf('.') >= 0 ? (f2.indexOf('.') + 3) : 3);
         const text_width = parseFloat(f3);
@@ -65,13 +66,20 @@ class ListItem extends React.Component {
         const selectedDateRangeStyle = {
             width: text_width,
             marginVertical: 4,
-            marginHorizontal: padding / 2,
         };
+
+        if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.CIRCLE) {
+            selectedDateRangeStyle.width = 30;
+            selectedDateRangeStyle.height = 30;
+            selectedDateRangeStyle.borderRadius = 999;
+            selectedDateRangeStyle.justifyContent = 'center';
+            selectedDateRangeStyle.alignItems = 'center';
+        }
 
         const currentDate = `${item.year}-${item.month}-${day}`;
 
         if (startDate === currentDate || endDate === currentDate) {
-            selectedDateStyle.borderRadius = 10;
+            selectedDateStyle.borderRadius = 999;
             selectedDateStyle.backgroundColor = selectedDateMarkColor;
 
             if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.ELLIPSE) {
@@ -80,20 +88,23 @@ class ListItem extends React.Component {
                 selectedDateRangeStyle.backgroundColor = selectedDateMarkColor;
             } else if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.RECTANGLE) {
                 selectedDateStyle.borderRadius = 0;
+            } else if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.CIRCLE) {
+                selectedDateStyle.backgroundColor = 'transparent';
+                selectedDateRangeStyle.backgroundColor = selectedDateMarkColor;
             }
 
             if (startDate && endDate) {
                 if (endDate === currentDate) {
-                    selectedDateRangeStyle.borderTopRightRadius = 10;
-                    selectedDateRangeStyle.borderBottomRightRadius = 10;
+                    selectedDateRangeStyle.borderTopRightRadius = 999;
+                    selectedDateRangeStyle.borderBottomRightRadius = 999;
                 }
                 if (startDate === currentDate) {
-                    selectedDateRangeStyle.borderTopLeftRadius = 10;
-                    selectedDateRangeStyle.borderBottomLeftRadius = 10;
+                    selectedDateRangeStyle.borderTopLeftRadius = 999;
+                    selectedDateRangeStyle.borderBottomLeftRadius = 999;
                 }
             } else {
                 // start date & end date here
-                selectedDateRangeStyle.borderRadius = 10;
+                selectedDateRangeStyle.borderRadius = 999;
             }
         }
 
@@ -114,7 +125,7 @@ class ListItem extends React.Component {
                 disabled={disabled}
                 onPress={() => this._selectDate(currentDate, index)}
                 activeOpacity={1}
-                style={{width: text_width}}
+                style={{width: text_width, justifyContent: 'center', alignItems: 'center'}}
             >
                 <View style={selectedDateRangeStyle}>
                     <View style={selectedDateStyle}>
@@ -149,7 +160,7 @@ class ListItem extends React.Component {
                 style={weeksStyle}
                 textStyle={weeksTextStyle}
             />}
-            <View style={[listItemStyles.dayContent, listItemStyle.dayContent || {}]}>
+            <View style={[listItemStyles.dayContent, {paddingLeft: PADDING / 2}, listItemStyle.dayContent || {}]}>
                 {item.days.map((day, index) => this._renderDays(day, index))}
             </View>
         </View>

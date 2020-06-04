@@ -44,6 +44,7 @@ export default class App extends Component {
                                 visible: false,
                             });
                         }}
+                        horizontal={false}
                         containerStyle={{flex: 1}}
                         minDate={'2018-5-23'}
                         // horizontal={true}
@@ -96,10 +97,12 @@ export default class App extends Component {
                                     visible: false,
                                 });
                             }}
+
                             pagingEnabled={true}
                             showsHorizontalScrollIndicator={false}
                             // scrollContentStyle={{backgroundColor: 'red'}}
                             minDate={'2018-5-23'}
+                            selectedDateMarkType={'circle'}
                             horizontal={true}
                             toolBarPosition={'bottom'}
                         >

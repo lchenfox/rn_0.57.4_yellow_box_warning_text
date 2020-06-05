@@ -7,6 +7,9 @@ export const toolBarStyles = StyleSheet.create({
         paddingBottom: 8,
         justifyContent: 'space-between',
         alignItems: 'center',
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+        backgroundColor: 'white',
     },
     title: {
         fontSize: 17,
@@ -41,11 +44,13 @@ export const weekBarStyles = StyleSheet.create({
 export const listItemStyles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'white',
     },
     headerTitleContainer: {
-        height: 50,
-        paddingBottom: 10,
-        justifyContent: 'flex-end',
+        marginTop: 10,
+        paddingVertical: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
     headerTitle: {

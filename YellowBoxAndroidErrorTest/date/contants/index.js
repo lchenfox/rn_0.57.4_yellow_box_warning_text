@@ -67,7 +67,9 @@ export const DEFAULT_DATE_MARK_TYPE = {
     ELLIPSE: 'ellipse',
     SEMIELLIPSE: 'semiellipse',
     RECTANGLE: 'rectangle',
+    SQUARE: 'square',
     CIRCLE: 'circle',
+    DOT: 'dot',
 };
 
 /**

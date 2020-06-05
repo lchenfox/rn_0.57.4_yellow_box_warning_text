@@ -1,25 +1,28 @@
 import React, {Component} from 'react';
-import {Button, View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, FlatList, Modal} from 'react-native';
-import {
-    WKAlert,
-    ModalTitle,
-    ModalContent,
-    ModalFooter,
-    ModalButton,
-    BottomModal,
-    ModalButtonProps,
-    SlideAnimation,
-    ScaleAnimation,
-} from "@shufengdong/wanke-bases";
+import {Button, View, Text, Modal} from 'react-native';
 import CalendarList from "./date/components/CalendarList";
 
 export default class App extends Component {
 
     state = {
-        bottomModal: false,
+
         selectedDate1: '',
         selectedDate2: '',
-        visible: false,
+
+        selectedDate3: '',
+        selectedDate4: '',
+
+        selectedDate5: '',
+        selectedDate6: '',
+
+        selectedDate7: '',
+        selectedDate8: '',
+
+        visible1: false,
+        visible2: false,
+        visible3: false,
+        visible4: false,
+
     };
 
     render() {
@@ -27,101 +30,140 @@ export default class App extends Component {
         return (
             <View style={{flex: 1}}>
 
-                <Modal animated={true} visible={this.state.visible}>
+                <View style={{marginTop: 80}}>
+                    <Button
+                        title="High-performance calendar list 1"
+                        onPress={() => this.setState({visible1: true})}
+                    />
+                    <Text style={{color: 'red', fontSize: 18, paddingLeft: 10}}>start
+                        date: {this.state.selectedDate1}</Text>
+                    <Text style={{color: 'red', fontSize: 18, paddingLeft: 10}}>end
+                        date: {this.state.selectedDate2}</Text>
+                </View>
+
+                <View style={{marginTop: 30}}>
+                    <Button
+                        title="High-performance calendar list 2"
+                        onPress={() => this.setState({visible2: true})}
+                    />
+                    <Text style={{color: 'green', fontSize: 18, paddingLeft: 10}}>start
+                        date: {this.state.selectedDate3}</Text>
+                    <Text style={{color: 'green', fontSize: 18, paddingLeft: 10}}>end
+                        date: {this.state.selectedDate4}</Text>
+                </View>
+
+                <View style={{marginTop: 30}}>
+                    <Button
+                        title="High-performance calendar list 3"
+                        onPress={() => this.setState({visible3: true})}
+                    />
+                    <Text style={{color: 'skyblue', fontSize: 18, paddingLeft: 10}}>start
+                        date: {this.state.selectedDate5}</Text>
+                    <Text style={{color: 'skyblue', fontSize: 18, paddingLeft: 10}}>end
+                        date: {this.state.selectedDate6}</Text>
+                </View>
+
+                <View style={{marginTop: 30}}>
+                    <Button
+                        title="High-performance calendar list 4"
+                        onPress={() => this.setState({visible4: true})}
+                    />
+                    <Text style={{color: 'orange', fontSize: 18, paddingLeft: 10}}>start
+                        date: {this.state.selectedDate7}</Text>
+                    <Text style={{color: 'orange', fontSize: 18, paddingLeft: 10}}>end
+                        date: {this.state.selectedDate8}</Text>
+                </View>
+
+                <Modal animationType={'slide'} visible={this.state.visible1}>
                     <View style={{height: 44}}/>
                     <CalendarList
-                        weeksChineseType={true}
-                        // containerStyle={{backgroundColor: 'red'}}
-                        // scrollContentStyle={{backgroundColor: 'green'}}
-                        cancel={() => this.setState({visible: false})}
-                        headerTitleType={2}
-                        listItemStyle={{headerTitle: {color: 'red'}}}
+                        containerStyle={{flex: 1}}
+                        minDate={'2015-5-23'}
+                        maxDate={'2020-6-6'}
+                        cancel={() => this.setState({visible1: false})}
                         confirm={data => {
-                            console.warn(data)
                             this.setState({
                                 selectedDate1: data[0],
                                 selectedDate2: data[1],
-                                visible: false,
+                                visible1: false,
                             });
                         }}
-                        horizontal={false}
-                        containerStyle={{flex: 1}}
-                        minDate={'2018-5-23'}
-                        // horizontal={true}
-                    >
-                        <View style={{height: 73, backgroundColor: 'gray'}}/>
-                    </CalendarList>
+                    />
                 </Modal>
 
-                <BottomModal
-                    visible={this.state.bottomModal}
-                    onTouchOutside={() => {
-                        // console.warn(333);
-                        this.setState({bottomModal: false});
-                    }}
-                    onSwipeOut={() => {
-                        // console.warn(444);
-                        this.setState({bottomModal: false});
-                    }}
-                    // modalStyle={{  }}
-                >
-                    <ModalContent
-                        style={{
-                            backgroundColor: 'fff',
-                            paddingHorizontal: 0,
-                            paddingVertical: 12,
-                            paddingBottom: 24,
-                            // height: 300,
-                            // height: '100%',
-                        }}
-                    >
-                        <CalendarList
-                            ref={ref => this.dateRef = ref}
-                            weeksChineseType={true}
-                            // containerStyle={{backgroundColor: 'red'}}
-                            // scrollContentStyle={{backgroundColor: 'green'}}
-                            cancel={() => {
-                                this.dateRef.scrollToIndex({index: 3})
-                                return;
-                                this.setState({bottomModal: false});
-                            }}
-                            headerTitleType={2}
-                            listItemStyle={{headerTitle: {color: 'red'}}}
-                            // selectedDateMarkType={'rectangle'}
-                            selectedDateMarkColor={'green'}
-                            confirm={data => {
-                                console.warn(data)
-                                this.setState({
-                                    selectedDate1: data[0],
-                                    selectedDate2: data[1],
-                                    visible: false,
-                                });
-                            }}
-
-                            pagingEnabled={true}
-                            showsHorizontalScrollIndicator={false}
-                            // scrollContentStyle={{backgroundColor: 'red'}}
-                            minDate={'2018-5-23'}
-                            selectedDateMarkType={'circle'}
-                            horizontal={true}
-                            toolBarPosition={'bottom'}
-                        >
-                            <View style={{height: 73, backgroundColor: 'gray'}}/>
-                        </CalendarList>
-                    </ModalContent>
-                </BottomModal>
-
-                <View style={{marginTop: 200}}>
-                    <Text style={{color: 'red', fontSize: 18, padding: 15}}>start date: {this.state.selectedDate1}</Text>
-                    <Text style={{color: 'green', fontSize: 18, padding: 15}}>end date: {this.state.selectedDate2}</Text>
-                    <Button
-                        title="系统Modal测试日期"
-                        onPress={() => {
-                            // this.setState({visible: true});
-                            this.setState({bottomModal: true});
+                <Modal animationType={'slide'} visible={this.state.visible2}>
+                    <View style={{height: 44}}/>
+                    <CalendarList
+                        containerStyle={{flex: 1}}
+                        titleText={'Select Date'}
+                        minDate={'2016-5-23'}
+                        maxDate={'2020-6-6'}
+                        cancel={() => this.setState({visible2: false})}
+                        selectedDateMarkType={'circle'}
+                        selectedDateMarkColor={'red'}
+                        selectedDateMarkRangeColor={'orange'}
+                        headerTitleType={2}
+                        confirm={data => {
+                            this.setState({
+                                selectedDate3: data[0],
+                                selectedDate4: data[1],
+                                visible2: false,
+                            });
                         }}
                     />
-                </View>
+                </Modal>
+
+                <Modal
+                    transparent={true}
+                    animationType={'slide'}
+                    visible={this.state.visible3}
+                >
+                    <View style={{flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                        <CalendarList
+                            minDate={'2018-5-23'}
+                            maxDate={'2020-6-6'}
+                            cancel={() => this.setState({visible3: false})}
+                            selectedDateMarkType={'dot'}
+                            horizontal={true}
+                            pagingEnabled={true}
+                            headerTitleType={3}
+                            confirm={data => {
+                                this.setState({
+                                    selectedDate5: data[0],
+                                    selectedDate6: data[1],
+                                    visible3: false,
+                                });
+                            }}
+                        />
+                    </View>
+                </Modal>
+
+                <Modal
+                    transparent={true}
+                    animationType={'slide'}
+                    visible={this.state.visible4}
+                >
+                    <View style={{flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                        <CalendarList
+                            minDate={'2018-5-23'}
+                            maxDate={'2020-6-6'}
+                            cancel={() => this.setState({visible4: false})}
+                            headerTitleType={5}
+                            listItemStyle={{day: {borderRadius: 5}}}
+                            selectedDateMarkType={'square'}
+                            horizontal={true}
+                            pagingEnabled={true}
+                            confirm={data => {
+                                this.setState({
+                                    selectedDate7: data[0],
+                                    selectedDate8: data[1],
+                                    visible4: false,
+                                });
+                            }}
+                        />
+                    </View>
+                </Modal>
+
             </View>
         );
     }

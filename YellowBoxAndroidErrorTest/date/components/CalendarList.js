@@ -48,10 +48,10 @@ class CalendarList extends Component {
             this.setState({startDate: date});
         }
         const {onPressDate} = this.props;
-        onPressDate && typeof onPressDate === 'function' && onPressDate(Constants.toStandardDateString(date));
+        onPressDate && typeof onPressDate === 'function' && onPressDate(Constants.toStandardDateString(date), index);
     };
 
-    _renderItem = ({item}) => {
+    _renderItem = ({item, index}) => {
         const {
             minDate,
             maxDate,
@@ -62,6 +62,12 @@ class CalendarList extends Component {
             beyondDatesDisabled,
             beyondDatesDisabledTextColor,
             horizontal,
+            rightArrowClick,
+            leftArrowClick,
+            hideArrow,
+            arrowAlign,
+            arrowColor,
+            arrowSize,
         } = this.props;
         return <ListItem
             item={item}
@@ -77,6 +83,40 @@ class CalendarList extends Component {
             beyondDatesDisabled={beyondDatesDisabled}
             beyondDatesDisabledTextColor={beyondDatesDisabledTextColor}
             horizontal={horizontal}
+            leftArrowClick={() => {
+                if (leftArrowClick && typeof leftArrowClick === 'function') {
+                    leftArrowClick(index);
+                    return;
+                }
+                if (this.props.inverted) {
+                    if (index !== this.state.dataSource.length - 1) {
+                        this.flatList.scrollToIndex({index: index + 1});
+                    }
+                } else {
+                    if (index !== 0) {
+                        this.flatList.scrollToIndex({index: index - 1});
+                    }
+                }
+            }}
+            rightArrowClick={() => {
+                if (rightArrowClick && typeof rightArrowClick === 'function') {
+                    rightArrowClick(index);
+                    return;
+                }
+                if (this.props.inverted) {
+                    if (index !== 0) {
+                        this.flatList.scrollToIndex({index: index - 1});
+                    }
+                } else {
+                    if (index !== this.state.dataSource.length - 1) {
+                        this.flatList.scrollToIndex({index: index + 1});
+                    }
+                }
+            }}
+            hideArrow={hideArrow}
+            arrowColor={arrowColor}
+            arrowSize={arrowSize}
+            arrowAlign={arrowAlign}
             {...this.props}
         />;
     };
@@ -152,7 +192,7 @@ class CalendarList extends Component {
         return (
             <View style={containerStyle}>
                 {showToolBar && toolBarPosition === Constants.DEFAULT_TOOL_BAR_POSITION.TOP && _toolBar}
-                {showWeeks && ((horizontal && pagingEnabled) || (!horizontal)) && <WeekBar
+                {showWeeks && !horizontal && <WeekBar
                     weeks={_weeks}
                     style={weeksStyle}
                     textStyle={weeksTextStyle}
@@ -169,6 +209,7 @@ class CalendarList extends Component {
                     showsVerticalScrollIndicator={showsVerticalScrollIndicator}
                     scrollEnabled={scrollEnabled}
                     pagingEnabled={pagingEnabled}
+                    initialNumToRender={5}
                     {...this.props}
                     renderItem={this._renderItem}
                 />
@@ -179,11 +220,6 @@ class CalendarList extends Component {
 }
 
 CalendarList.propTypes = {
-
-    /**
-     * A callback with a date parameter(like "2019-08-09") when the user presses some date item.
-     */
-    onPressDate: PropTypes.func,
 
     /**
      * Seen as FlatList component.
@@ -291,6 +327,11 @@ CalendarList.propTypes = {
     confirmDisabled: PropTypes.bool,
 
     /**
+     * A callback with a date parameter(like "2019-08-09") and row index when the user presses some date item.
+     */
+    onPressDate: PropTypes.func,
+
+    /**
      * Min date to limit, default is "2015-01-01". Other supported formats: "2015-1-1", "2015/01/01", "2015/1/1".
      */
     minDate: PropTypes.string,
@@ -372,7 +413,7 @@ CalendarList.propTypes = {
     listItemStyle: PropTypes.any,
 
     /**
-     * Selected date mark type. Default is 'ellipse', other choices: 'semiellipse'.
+     * Selected date mark type. Default is 'ellipse', other choices: 'semiellipse'、'rectangle'、'circle'、 'square'、'dot'.
      */
     selectedDateMarkType: PropTypes.string,
 
@@ -395,6 +436,36 @@ CalendarList.propTypes = {
      * When the date is out of minDate or maxDate, the button text color. Default is '#b9b9b9'.
      */
     beyondDatesDisabledTextColor: PropTypes.string,
+
+    /**
+     * Left arrow click callback with current date index parameter. Only when "horizontal={true}".
+     */
+    leftArrowClick: PropTypes.func,
+
+    /**
+     * Right arrow click callback with current date index parameter. Only when "horizontal={true}".
+     */
+    rightArrowClick: PropTypes.func,
+
+    /**
+     * Whether to hide arrow. Default is false. Only when "horizontal={true}".
+     */
+    hideArrow: PropTypes.bool,
+
+    /**
+     * Arrow color. Default is 'gray'. Only when "horizontal={true}".
+     */
+    arrowColor: PropTypes.string,
+
+    /**
+     * Arrow size. Default is 8. Only when "horizontal={true}".
+     */
+    arrowSize: PropTypes.number,
+
+    /**
+     * Arrow align. Default is 'left'. One of ['left', 'center', 'right']. Only when "horizontal={true}".
+     */
+    arrowAlign: PropTypes.string,
 };
 
 CalendarList.defaultProps = {

@@ -3,7 +3,7 @@ import {listItemStyles} from "../style";
 import {Text, TouchableOpacity, View} from "react-native";
 import Arrow from "./Arrow";
 import PropTypes from "prop-types";
-import * as Constants from "../contants";
+import * as Constants from "../../contants";
 
 const ARROW_ALIGN = {
     LEFT: 'left',

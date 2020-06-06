@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import PropTypes from 'prop-types';
-import * as Constants from "../contants";
+import * as Constants from "../../contants";
 import {listItemStyles} from "../style";
 import WeekBar from "./WeekBar";
 import ListItemHeader from "./ListItemHeader";
@@ -25,7 +25,7 @@ class ListItem extends React.Component {
         return !!(Constants.compareDatesWith(currentDate, startDate) && Constants.compareDatesWith(endDate, currentDate));
     };
 
-    _getMarkTypeStyles = currentDate => {
+    _getMarkTypeStyles = (currentDate, days) => {
 
         const {
             listItemStyle,
@@ -43,8 +43,8 @@ class ListItem extends React.Component {
             markBorderRadius = listItemStyle.day.borderRadius;
         }
 
-        const selectedDateStyle = {};
-        const selectedDateRangeStyle = {width: text_width, marginTop: 5};
+        const selectedDateStyle = {backgroundColor: 'transparent'};
+        const selectedDateRangeStyle = {width: text_width, marginTop: 5, backgroundColor: 'transparent'};
 
         // Dot
         if (selectedDateMarkType === Constants.DEFAULT_DATE_MARK_TYPE.DOT && hasSelected) {
@@ -115,11 +115,13 @@ class ListItem extends React.Component {
         return [selectedDateRangeStyle, selectedDateStyle];
     };
 
-    _renderDot = styles => (<View style={{borderRadius: 2.5, backgroundColor: styles[0].backgroundColor}}>
-        <View style={{width: 5, height: 5, borderRadius: 2.5, backgroundColor: styles[1].backgroundColor}}/>
-    </View>);
+    _renderDot = styles => {
+        return (<View style={{borderRadius: 2.5, backgroundColor: styles[0].backgroundColor}}>
+            <View style={{width: 5, height: 5, borderRadius: 2.5, backgroundColor: styles[1].backgroundColor}}/>
+        </View>);
+    };
 
-    _renderDays = (day, index) => {
+    _renderDays = (day, index, days) => {
 
         const {
             item,
@@ -132,7 +134,7 @@ class ListItem extends React.Component {
         } = this.props;
 
         const currentDate = `${item.year}-${item.month}-${day}`;
-        const markTypeStyles = this._getMarkTypeStyles(currentDate);
+        const markTypeStyles = this._getMarkTypeStyles(currentDate, days);
 
         let dayStyle = {};
         if (listItemStyle.day && typeof listItemStyle.day === 'object') {
@@ -206,7 +208,7 @@ class ListItem extends React.Component {
                 textStyle={weeksTextStyle}
             />}
             <View style={[listItemStyles.dayContent, {paddingLeft: PADDING / 2}, listItemStyle.dayContent || {}]}>
-                {item.days.map((day, index) => this._renderDays(day, index))}
+                {item.days.map((day, index) => this._renderDays(day, index, item.days))}
             </View>
         </View>;
     }

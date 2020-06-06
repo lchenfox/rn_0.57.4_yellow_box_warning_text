@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {FlatList, View} from 'react-native';
 import PropTypes from 'prop-types';
 import * as Constants from "../contants";
-import WeekBar from "./WeekBar";
-import ToolBar from "./ToolBar";
-import ListItem from "./ListItem";
+import WeekBar from "./components/WeekBar";
+import ToolBar from "./components/ToolBar";
+import ListItem from "./components/ListItem";
 
 class CalendarList extends Component {
 
@@ -285,7 +285,7 @@ CalendarList.propTypes = {
     toolBarConfirmStyle: PropTypes.any,
 
     /**
-     * tool bar title text style, default is "".
+     * tool bar title text style.
      */
     titleStyle: PropTypes.any,
 
@@ -368,12 +368,12 @@ CalendarList.propTypes = {
     firstDayOnWeeks: PropTypes.number,
 
     /**
-     * For week days, set the container styles like {backgroundColor: 'red'}
+     * For week days, set the container styles like {backgroundColor: 'red'}.
      */
     weeksStyle: PropTypes.any,
 
     /**
-     * For week days, set the week day text styles like {color: 'blue', fontSize: 14}
+     * For week days, set the week day text styles like {color: 'blue', fontSize: 14}.
      */
     weeksTextStyle: PropTypes.any,
 

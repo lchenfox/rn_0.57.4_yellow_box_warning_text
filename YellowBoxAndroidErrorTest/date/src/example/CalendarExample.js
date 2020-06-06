@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Button, View, Text, Modal} from 'react-native';
-import {CalendarList} from "./date";
+import CalendarList from "../calendar/CalendarList";
 
-export default class App extends Component {
+export default class CalendarExample extends Component {
 
     state = {
 
